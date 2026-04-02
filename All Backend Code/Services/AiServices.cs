@@ -16,7 +16,19 @@ namespace WebApplication1.Services
         {
             _settings = settings.Value;
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_settings.ApiKey}");
+
+            // 🔍 Debug (temporary)
+            Console.WriteLine("API KEY LENGTH: " + _settings.ApiKey?.Length);
+
+            // ❌ Fail fast if key missing
+            if (string.IsNullOrEmpty(_settings.ApiKey))
+            {
+                throw new Exception("Groq API Key is missing!");
+            }
+
+            // ✅ Correct way to set header
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _settings.ApiKey);
         }
 
         public async Task<string> ChatAsync(List<AIChatMessage> messages)
